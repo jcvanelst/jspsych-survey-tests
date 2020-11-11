@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    <meta charset="UTF-8">
+    <title>Survey questions</title>
+
+    <script src="https://web-experiments.lab.hum.uu.nl/jspsych/6.1.0/jspsych.js"></script>
+    <script src="https://web-experiments.lab.hum.uu.nl/jspsych/6.1.0/plugins/jspsych-survey-html-form.js"></script>
+    <script src="https://web-experiments.lab.hum.uu.nl/jspsych/6.1.0/plugins/jspsych-survey-multi-choice.js"></script>
+    <script src="https://web-experiments.lab.hum.uu.nl/jspsych/6.1.0/plugins/jspsych-survey-text.js"></script>
+    <script src="https://web-experiments.lab.hum.uu.nl/jspsych/6.1.0/plugins/jspsych-survey-multi-select.js"></script>
+
+    <!-- Generic jspsych style sheets -->
+    <link href="./css/uu-style.css" rel="stylesheet" type="text/css"/>
+
+    <!-- Uil OTS libraries -->
+    <script src="https://web-experiments.lab.hum.uu.nl/jspsych/uil-utils/dev/jspsych-uil-utils.js"></script>
+    <style>
+        
+        input,
+        label {
+            margin: .4rem 0;
+        }
+
+        span::after {
+          padding-left: 5px;
+        }
+
+        input:invalid + span::after {
+          content: '✖';
+        }
+
+        input:valid+span::after {
+          content: '✓';
+        }
+        
+    </style>
+    </head>
+    <body></body>
+    <script>
+
+        ACCESS_KEY = 'blergh';
+
+        //native language
+        //monolingual/not
+        //dyslectic/not
+        //date of birth
+        //sex
+        //left/right handed
+
+
+        //honestly, it's probably better to do this type of thing in Qualtrics or custom external html, but well
+        // let's start simple, the problem is that we want date pickers from native html/js and input validation
+        
+        //https://stackoverflow.com/questions/3217492/list-of-language-codes-in-yaml-or-json
+        //https://www.localeplanet.com/api/auto/langmap.html?lang=es,en,fr
+        //https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/date
+
+        //     <link href="https://web-experiments.lab.hum.uu.nl/jspsych/6.1.0/css/jspsych.css" rel="stylesheet" type="text/css"/>
+
+
+        var native_language_trial_text = {
+            type: 'survey-text',
+            questions: [
+                {
+                    prompt: "What is your native language?", 
+                    name: 'native_language'
+                }
+            ],
+        };
+
+        var birthdate_trial_html_1 = {
+            type: 'survey-html-form',
+            pramble: '<p>survey stuff</p>',
+            html: '<label for="birth">When were you born?'    +
+                  '<input type="date" id="birth" name="birthdate" ' + 
+                  'value="1997-07-23" min="1933-01-01" max="2018-12-31" required>' + 
+                  '<span class="validity"></span>' + '</label>'
+        }
+
+        var birthdate_trial_html_2 = {
+            type: 'survey-html-form',
+            pramble: '<p>When were you born? (no need to be exact to the day)</p>',
+            html: '<input type="date" id="birth" name="birthdate" ' + 
+                  'value="1997-07-23" min="1933-01-01" max="2018-12-31" required>' + 
+                  '<span class="validity"></span>'
+        }
+
+        // default options
+        var bilingual_options = ["No","Yes"];
+        var dyslex_options = ["No", "Yes"];
+        var gender_options = ["Female", "Male"];
+        var hand_options = ["Left handed", "Right handed"];
+
+        var multi_choice_block = {
+            type: 'survey-multi-choice',
+            questions: [
+                {
+                    prompt: "Have you been raised speaking multiple languages at home? (since when you were an infant)",
+                    name: 'Multilingual', 
+                    options: bilingual_options, 
+                    required:true, 
+                    horizontal: true
+                }, 
+                {
+                    prompt: "Are you dyslexic?", 
+                    name: 'Dyslexic',
+                    options: dyslex_options,
+                    required: true,
+                    horizontal: true
+                },
+                {
+                    prompt: "What gender are you?",
+                    name:'Gender',
+                    options: gender_options,
+                    required: true,
+                    horizontal: true
+                },
+                {
+                    prompt: "What is your hand preference?", name:'HandPreference', options: hand_options, required: true, horizontal: true
+                }
+            ],
+        };
+
+        var survey_trial_text = {
+            type: 'survey-text',
+            questions: [
+                {
+                    prompt: "How old are you in years?", 
+                    name: 'AgeYear'
+                },
+                                {
+                prompt: "How old are you in years?", 
+                    name: 'AgeYear'
+                },  
+                {
+                    prompt: "Where were you born?", 
+                    name: 'BirthLocation'
+                }
+            ],
+        };
+
+        var multi_select_block = {
+            type: 'survey-multi-select',
+            questions: [
+              {
+                prompt: "Which of these colors do you like?", 
+                options: ["Red", "Yellow", "Green", "Blue", "Black"], 
+                horizontal: true,
+                required: true,
+                name: 'Colors'
+              }, 
+              {
+                prompt: "Which of these foods do you like?", 
+                options: ["Apples", "Bananas", "Carrots", "Donuts", "Eggplant"], 
+                horizontal: true,
+                required: true,
+                name: 'Foods'
+              }
+            ], 
+            randomize_question_order: false
+        };
+
+
+        timeline = [];
+
+        timeline.push(native_language_trial_text);
+        timeline.push(birthdate_trial_html_1);
+        timeline.push(multi_choice_block);
+
+        jsPsych.init({
+            timeline: timeline,
+            show_preload_progress_bar: false,
+            use_webaudio: false,
+            exclusions: {
+                min_width: 800,
+                min_height: 600
+            },
+            on_finish: function() {
+                uil.saveData(ACCESS_KEY, true);
+            }
+        })
+
+    </script>
+</html>
+
