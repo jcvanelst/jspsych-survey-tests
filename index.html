@@ -2,7 +2,7 @@
 <html>
     <head>
     <meta charset="UTF-8">
-    <title>Survey questions</title>
+    <title>Survey (minimal validation)</title>
 
     <script src="https://web-experiments.lab.hum.uu.nl/jspsych/6.1.0/jspsych.js"></script>
     <script src="https://web-experiments.lab.hum.uu.nl/jspsych/6.1.0/plugins/jspsych-survey-html-form.js"></script>
@@ -38,9 +38,10 @@
     </head>
     <body></body>
     <script>
-
+    
         ACCESS_KEY = 'blergh';
 
+        //WANTED in jsPsych context:
         //native language
         //monolingual/not
         //dyslectic/not
@@ -48,92 +49,43 @@
         //sex
         //left/right handed
 
-
-        //honestly, it's probably better to do this type of thing in Qualtrics or custom external html, but well
-        // let's start simple, the problem is that we want date pickers from native html/js and input validation
-        
-        //https://stackoverflow.com/questions/3217492/list-of-language-codes-in-yaml-or-json
-        //https://www.localeplanet.com/api/auto/langmap.html?lang=es,en,fr
-        //https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/date
-
-        //     <link href="https://web-experiments.lab.hum.uu.nl/jspsych/6.1.0/css/jspsych.css" rel="stylesheet" type="text/css"/>
-
-        // client-side input validation will be darn difficult to regexp...
+        // client-side input validation will be darn difficult 
         // at least for a native langage text field...
-
-        //  <form>
-        //   <label for="choose">Would you prefer a banana or a cherry?</label>
-        //   <input id="choose" name="i_like" required pattern="[Bb]anana|[Cc]herry">
-        //   <button>Submit</button>
-        // </form>
-
-
-        var native_language_trial_text = {
-            type: 'survey-text',
-            questions: [
-                {
-                    prompt: "What is your native language?", 
-                    name: 'native_language'
-                }
-            ],
-        };
-
-        var birthdate_trial_html_1 = {
-            type: 'survey-html-form',
-            preamble: '<p>survey stuff</p>',
-            html: '<label for="birth">When were you born?</label>' +
-                  '<input type="date" id="birth" name="birthdate" ' + 
-                  'value="1997-07-23" min="1933-01-01" max="2018-12-31" required>' + 
-                  '<span class="validity"></span>'
-        }
-
-        var birthdate_trial_html_2 = {
-            type: 'survey-html-form',
-            preamble: '<p>When were you born? (no need to be exact to the day)</p>',
-            html: '<input type="date" id="birth" name="birthdate" ' + 
-                  'value="1997-07-23" min="1933-01-01" max="2018-12-31" required>' + 
-                  '<span class="validity"></span>'
-        }
-
-        var input_valid_text_html = {
-            type: 'survey-html-form',
-            preamble: '<p>Where were you born? (input validation for: BananaRepublic or cherryColaRado? )</p>',
-            html: '<input type="text" id="birth_country" name="birthcountry" required pattern="[Bb]anana|[Cc]herry">' + 
-                  '<span class="validity"></span>'
-        }
         
-        var input_valid_number_html = {
+        var survey_valid_year_html_number = {
             type: 'survey-html-form',
-            preamble: '<p>In what year were you born (input validation for between 1919 and 2019) </p>',
+            preamble: '<p>In what year were you born? (1919 - 2019) </p>',
             html: '<input type="number" id="birth_year" name="birth_year" placeholder=1999 min=1919 max=2019 required>' + 
                   '<span class="validity"></span><BR>'
         }
-
-        var input_valid_name_html = {
+        
+        var survey_valid_month_html_number = {
             type: 'survey-html-form',
-            preamble: '<p>What is your native language?(input pattern now at: "[a-zA-Z]+"</p>',
-            html: '<label for="native_language">My native language is: </label>' + 
-                 '<input type="text" id="language" name="native_language" pattern="[a-zA-Z]+" placeholder="Dutch" required>' +
+            preamble: '<p>In what <i>month</i> were you born? (1-12) </p>',
+            html: '<input type="number" id="birth_month" name="birth_year" placeholder=7 min=1 max=12 required>' + 
                   '<span class="validity"></span><BR>'
         }
 
-//   <label for="name">Name: *</label>
-//   <input type="text" id="name" name="name" pattern="[a-zA-Z]+" placeholder="Monty" required>
-//   <br>
+        var survey_valid_language_html_text = {
+            type: 'survey-html-form',
+            preamble: '<p>What is your native language?(input pattern now at: "[a-zA-Z]+"</p>',
+            html: '<input type="text" id="language" name="native_language" pattern="[a-zA-Z]+" placeholder="Dutch" required>' +
+                  '<span class="validity"></span><BR>'
+        }
 
-        // default options
+        // default options for the multi=block
         var bilingual_options = ["No","Yes"];
-        var dyslex_options = ["No", "Yes"];
+        var dyslex_options = ["No", "Yes", "Unsure (not diagnosed)"];
         var gender_options = ["Female", "Male"];
         var hand_options = ["Left handed", "Right handed"];
 
-        // this is the most usable plugin, since it has input validation
-        // maybe make a bunch of age categories
-        var multi_choice_block = {
+        // this multi-choice is a usable plugin, since it has built-in 
+        // validation
+        var survey_multi_choice_block = {
             type: 'survey-multi-choice',
             questions: [
                 {
-                    prompt: "Have you been raised speaking multiple languages at home? (since when you were an infant)",
+                    prompt: "Have you been raised, speaking multiple languages at home?<br><br>(Note: since when you were an <i>infant?</i>)",
                     name: 'Multilingual', 
                     options: bilingual_options, 
                     required:true, 
@@ -154,36 +106,21 @@
                     horizontal: true
                 },
                 {
-                    prompt: "What is your hand preference?", name:'HandPreference', options: hand_options, required: true, horizontal: true
+                    prompt: "What is your hand preference?", 
+                    name:'HandPreference', 
+                    options: hand_options, 
+                    required: true, 
+                    horizontal: true
                 }
             ],
         };
-
-        var multi_question_birth_year_month = {
-            type: 'survey-text',
-            questions: [
-                {
-                    prompt: "In what year were you born?", 
-                    name: 'BirthYear',
-
-                },
-                {
-                    prompt: "In what month (1-12) were you born?", 
-                    name: 'BirthMonth'
-                }
-            ],
-        };
-
 
         timeline = [];
 
-        //timeline.push(input_valid_text_html);
-        timeline.push(input_valid_number_html);
-        timeline.push(input_valid_name_html);
-        
-        timeline.push(native_language_trial_text);
-        timeline.push(multi_question_birth_year_month);
-        timeline.push(multi_choice_block);
+        timeline.push(survey_valid_year_html_number);
+        timeline.push(survey_valid_month_html_number);
+        timeline.push(survey_valid_language_html_text);
+        timeline.push(survey_multi_choice_block);
 
         jsPsych.init({
             timeline: timeline,
