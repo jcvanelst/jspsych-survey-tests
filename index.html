@@ -58,6 +58,15 @@
 
         //     <link href="https://web-experiments.lab.hum.uu.nl/jspsych/6.1.0/css/jspsych.css" rel="stylesheet" type="text/css"/>
 
+        // client-side input validation will be darn difficult to regexp...
+        // at least for a native langage text field...
+
+        //  <form>
+        //   <label for="choose">Would you prefer a banana or a cherry?</label>
+        //   <input id="choose" name="i_like" required pattern="[Bb]anana|[Cc]herry">
+        //   <button>Submit</button>
+        // </form>
+
 
         var native_language_trial_text = {
             type: 'survey-text',
@@ -71,20 +80,46 @@
 
         var birthdate_trial_html_1 = {
             type: 'survey-html-form',
-            pramble: '<p>survey stuff</p>',
-            html: '<label for="birth">When were you born?'    +
+            preamble: '<p>survey stuff</p>',
+            html: '<label for="birth">When were you born?</label>' +
                   '<input type="date" id="birth" name="birthdate" ' + 
                   'value="1997-07-23" min="1933-01-01" max="2018-12-31" required>' + 
-                  '<span class="validity"></span>' + '</label>'
+                  '<span class="validity"></span>'
         }
 
         var birthdate_trial_html_2 = {
             type: 'survey-html-form',
-            pramble: '<p>When were you born? (no need to be exact to the day)</p>',
+            preamble: '<p>When were you born? (no need to be exact to the day)</p>',
             html: '<input type="date" id="birth" name="birthdate" ' + 
                   'value="1997-07-23" min="1933-01-01" max="2018-12-31" required>' + 
                   '<span class="validity"></span>'
         }
+
+        var input_valid_text_html = {
+            type: 'survey-html-form',
+            preamble: '<p>Where were you born? (input validation for: BananaRepublic or cherryColaRado? )</p>',
+            html: '<input type="text" id="birth_country" name="birthcountry" required pattern="[Bb]anana|[Cc]herry">' + 
+                  '<span class="validity"></span>'
+        }
+        
+        var input_valid_number_html = {
+            type: 'survey-html-form',
+            preamble: '<p>In what year were you born (input validation for between 1919 and 2019) </p>',
+            html: '<input type="number" id="birth_year" name="birth_year" placeholder=1999 min=1919 max=2019 required>' + 
+                  '<span class="validity"></span><BR>'
+        }
+
+        var input_valid_name_html = {
+            type: 'survey-html-form',
+            preamble: '<p>What is your native language?(input pattern now at: "[a-zA-Z]+"</p>',
+            html: '<label for="native_language">My native language is: </label>' + 
+                 '<input type="text" id="language" name="native_language" pattern="[a-zA-Z]+" placeholder="Dutch" required>' +
+                  '<span class="validity"></span><BR>'
+        }
+
+//   <label for="name">Name: *</label>
+//   <input type="text" id="name" name="name" pattern="[a-zA-Z]+" placeholder="Monty" required>
+//   <br>
 
         // default options
         var bilingual_options = ["No","Yes"];
@@ -92,6 +127,8 @@
         var gender_options = ["Female", "Male"];
         var hand_options = ["Left handed", "Right handed"];
 
+        // this is the most usable plugin, since it has input validation
+        // maybe make a bunch of age categories
         var multi_choice_block = {
             type: 'survey-multi-choice',
             questions: [
@@ -122,50 +159,30 @@
             ],
         };
 
-        var survey_trial_text = {
+        var multi_question_birth_year_month = {
             type: 'survey-text',
             questions: [
                 {
-                    prompt: "How old are you in years?", 
-                    name: 'AgeYear'
+                    prompt: "In what year were you born?", 
+                    name: 'BirthYear',
+
                 },
-                                {
-                prompt: "How old are you in years?", 
-                    name: 'AgeYear'
-                },  
                 {
-                    prompt: "Where were you born?", 
-                    name: 'BirthLocation'
+                    prompt: "In what month (1-12) were you born?", 
+                    name: 'BirthMonth'
                 }
             ],
-        };
-
-        var multi_select_block = {
-            type: 'survey-multi-select',
-            questions: [
-              {
-                prompt: "Which of these colors do you like?", 
-                options: ["Red", "Yellow", "Green", "Blue", "Black"], 
-                horizontal: true,
-                required: true,
-                name: 'Colors'
-              }, 
-              {
-                prompt: "Which of these foods do you like?", 
-                options: ["Apples", "Bananas", "Carrots", "Donuts", "Eggplant"], 
-                horizontal: true,
-                required: true,
-                name: 'Foods'
-              }
-            ], 
-            randomize_question_order: false
         };
 
 
         timeline = [];
 
+        //timeline.push(input_valid_text_html);
+        timeline.push(input_valid_number_html);
+        timeline.push(input_valid_name_html);
+        
         timeline.push(native_language_trial_text);
-        timeline.push(birthdate_trial_html_1);
+        timeline.push(multi_question_birth_year_month);
         timeline.push(multi_choice_block);
 
         jsPsych.init({
